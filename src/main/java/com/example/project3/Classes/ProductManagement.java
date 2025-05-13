@@ -73,5 +73,5 @@ public class ProductManagement {
         return false;
     }
 
-    //Display product and sort product in ProductMenu class
+    //Display product and sort product in ProductManagementMenu class
 }

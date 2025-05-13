@@ -53,7 +53,7 @@ public class CategoryManagement {
         return null;
     }
 
-    //note: list categories in the categoryMenu class
+    //note: list categories in the CategoryManagementMenu class
 
 
 }

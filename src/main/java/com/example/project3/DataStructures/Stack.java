@@ -1,6 +1,6 @@
 package com.example.project3.DataStructures;
 
-public class Stack<T> implements StackInterface<T> {
+public class Stack<T> implements StackInterface<T>{
 
     private CircularLinkedList<T> list = new CircularLinkedList<>();
 
@@ -24,8 +24,17 @@ public class Stack<T> implements StackInterface<T> {
         return list.isEmpty();
     }
 
+    public boolean exist(T data){
+        for(T curr:list){
+            if(curr.equals(data))
+                return true;
+        }
+        return false;
+    }
+
     @Override
     public void clear() {
         list.clear();
     }
+
 }

@@ -41,7 +41,7 @@ public class CursorArray<T extends Comparable<T>> implements Iterable<T>{
         return i;
     }
 
-    public int insertFirst(T data, int L) {
+    public int insertFirst(int l,T data) {
         int i = mAlloc();
         if (i == 0) {
             cA[0].setNext(capacity);
@@ -52,10 +52,10 @@ public class CursorArray<T extends Comparable<T>> implements Iterable<T>{
             capacity = capacity+5;
             cA = cursorArray.cA;
             System.out.println(1);
-            return insertFirst(data, L);
+            return insertFirst(l,data);
         }
-        cA[i] = new CNode<>(data, cA[L].getNext());
-        cA[L].setNext(i);
+        cA[i] = new CNode<>(data, cA[l].getNext());
+        cA[l].setNext(i);
         return 0;
     }
 
@@ -68,25 +68,37 @@ public class CursorArray<T extends Comparable<T>> implements Iterable<T>{
         return cA[l].getNext() == 0;
     }
 
-    public String listToString(int l) {
-        if (isNull(l) || isEmpty(l)) {
-            return null;
+//    public String listToString(int l) {
+//        if (isNull(l) || isEmpty(l)) {
+//            return null;
+//        }
+//        String str = "list_" + l + "-->";
+//        return listToString(str, cA[cA[l].getNext()]);
+//    }
+//
+//    public String listToString(String str, CNode<T> c) {
+//        str += c + "-->";
+//
+//        if (c.getNext() == 0)
+//            return str + "null";
+//
+//        return listToString(str, cA[c.getNext()]);
+//    }
+
+
+    public boolean find(int l,T data){
+        if(isEmpty(l) || isNull(l))
+            return false;
+
+        while(l !=0){
+            l = cA[l].getNext();
+            if(cA[l].getData().equals(data))
+                return true;
         }
-        String str = "list_" + l + "-->";
-        return listToString(str, cA[cA[l].getNext()]);
+        return false;
     }
 
-    public String listToString(String str, CNode<T> c) {
-        str += c + "-->";
-
-        if (c.getNext() == 0)
-            return str + "null";
-
-        return listToString(str, cA[c.getNext()]);
-    }
-
-
-    public int findPrevious(T data, int l) {
+    public int findPrevious(int l,T data) {
         while (!isNull(l) && !isEmpty(l)) {
             if (cA[cA[l].getNext()].getData().equals(data))
                 return l;
@@ -95,8 +107,8 @@ public class CursorArray<T extends Comparable<T>> implements Iterable<T>{
         return -1; // not found
     }
 
-    public CNode<T> delete(T data, int l) {
-        int p = findPrevious(data, l);
+    public CNode<T> delete(int l,T data) {
+        int p = findPrevious(l,data);
         if (p != -1) {
             int c = cA[p].getNext();
             CNode<T> temp = cA[c];
@@ -140,52 +152,6 @@ public class CursorArray<T extends Comparable<T>> implements Iterable<T>{
         }
     }
 
-    public boolean find(T data, int l) {
-        return find(data, l, cA[cA[l].getNext()]);
-    }
-
-    public boolean find(T data, int l, CNode<T> c) {
-        if (isEmpty(l))
-            return false;
-        if (c == cA[0])
-            return false;
-        if (c.getData().compareTo(data) == 0)
-            return true;
-
-        return find(data, l, cA[c.getNext()]);
-    }
-
-    public boolean equals(int l1, int l2) {
-        return equals(l1, l2, cA[l1], cA[l2]);
-    }
-
-    public boolean equals(int l1, int l2, CNode<T> c1, CNode<T> c2) {
-        if (cA[l1].getNext() == 0 && cA[l2].getNext() == 0)
-            return true;
-        if (length(l1) != length(l2))
-            return false;
-
-        if (c1.getData() == c2.getData() && c1.getNext() == 0)
-            return true;
-        if (c1.getNext() == 0)
-            return false;
-
-        c1 = cA[c1.getNext()];
-        c2 = cA[c2.getNext()];
-
-        return equals(l1, l2, c1, c2);
-
-//        CNode<T> c1 = cA[cA[l1].getNext()];
-//        CNode<T> c2 = cA[cA[l2].getNext()];
-//        boolean cond = true;
-//        while (cA[l1].getNext() != 0){
-//            if (c1.getData().compareTo(c2.getData())!= 0) {
-//                cond = false;
-//                break;
-//            }
-//        }
-//        return cond;
-    }
 
     public Iterator<T> iterator() {
         return new Iteratooor(1);

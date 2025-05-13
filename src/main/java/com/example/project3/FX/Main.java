@@ -4,6 +4,7 @@ import com.example.project3.Classes.CategoryManagement;
 import com.example.project3.Classes.Product;
 import com.example.project3.Classes.ProductCategory;
 import com.example.project3.Classes.ProductManagement;
+import com.example.project3.DataStructures.Stack;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
@@ -36,6 +37,9 @@ public class Main extends Application {
     }
 
     public static void main(String[] args) {
+
         launch();
     }
+
+
 }

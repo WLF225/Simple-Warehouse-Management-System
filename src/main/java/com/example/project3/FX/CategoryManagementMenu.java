@@ -21,6 +21,7 @@ public class CategoryManagementMenu extends BorderPane {
         Main.stage.setTitle("Category Management");
 
         TextField searchTextField = new TextField();
+        searchTextField.setPromptText("Category name");
 
         Button[] buttons = {new Button("Search for Category"), new Button("Add Category"),
                 new Button("Edit Category"), new Button("Delete Category"),

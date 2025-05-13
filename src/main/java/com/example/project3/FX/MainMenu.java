@@ -13,7 +13,7 @@ public class MainMenu extends BorderPane {
         Main.stage.setTitle("Main Menu");
 
         Button[] buttons = {new Button("Category Management"),
-                new Button("Shipment Management"), new Button("Statistical report"),new Button("Read from file"),
+                new Button("Statistical report"),new Button("Read from file"),
                 new Button("Save to file"), new Button("Exit")};
 
         for (Button button : buttons) {
