@@ -24,9 +24,6 @@ public class Stack<T> implements StackInterface<T>{
         return list.isEmpty();
     }
 
-    public T find(T data){
-        return list.find(data);
-    }
 
     @Override
     public void clear() {

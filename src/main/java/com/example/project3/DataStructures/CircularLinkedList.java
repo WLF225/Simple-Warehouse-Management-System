@@ -59,14 +59,6 @@ public class CircularLinkedList<T> implements Iterable<T> {
         head = null;
     }
 
-    public T find(T data){
-        for(T curr:this){
-            if(curr.equals(data))
-                return curr;
-        }
-        return null;
-    }
-
     @Override
     public Iterator<T> iterator() {
         return new Iteratorr();

@@ -45,49 +45,10 @@ public class Queue<T> implements QueueInterface<T> {
         return stack1.isEmpty() && stack2.isEmpty();
     }
 
-    public T find(T data){
-        T stackData1 = stack1.find(data);
-        if(stackData1 != null)
-            return stackData1;
-        return stack2.find(data);
-    }
-
     @Override
     public void clear() {
         stack1.clear();
         stack2.clear();
     }
 
-    public void addFirst(T data){
-        Queue<T> q2 = new Queue<>();
-
-        while(!isEmpty()){
-            q2.enqueue(dequeue());
-        }
-
-        enqueue(data);
-        while (!q2.isEmpty()) {
-            enqueue(q2.dequeue());
-        }
-    }
-
-    public T deleteLast(){
-        if(isEmpty())
-            return null;
-
-        if(!stack1.isEmpty())
-            return stack1.pop();
-
-        //to delete the bottom of stack2
-        Stack<T> temp = new Stack<>();
-        while(!stack2.isEmpty())
-            temp.push(stack2.pop());
-
-        T data = temp.pop();
-
-        while(!temp.isEmpty())
-            stack2.push(temp.pop());
-
-        return data;
-    }
 }

@@ -29,11 +29,11 @@ public class Main extends Application {
         ShipmentManagement.addShipment(new Shipment("SHP1","P1",15, new GregorianCalendar()),prod,false, new GregorianCalendar());
         ShipmentManagement.addShipment(new Shipment("SHP2","P1",10, new GregorianCalendar()),prod,false, new GregorianCalendar());
         ShipmentManagement.addShipment(new Shipment("SHP3","P1",12, new GregorianCalendar()),prod,false, new GregorianCalendar());
+
         ShipmentManagement.approveShipment(prod,false, new GregorianCalendar());
 
         ShipmentManagement.cancelShipment(prod,false, new GregorianCalendar());
-        ShipmentManagement.undo(prod);
-        ShipmentManagement.redo(prod);
+
 
         Scene scene = new Scene(new Pane());
         MainMenu mainMenu = new MainMenu(scene);

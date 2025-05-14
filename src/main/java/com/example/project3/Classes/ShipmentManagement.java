@@ -1,5 +1,8 @@
 package com.example.project3.Classes;
 
+import com.example.project3.DataStructures.Queue;
+import com.example.project3.DataStructures.Stack;
+
 import java.util.GregorianCalendar;
 
 public class ShipmentManagement {
@@ -8,7 +11,7 @@ public class ShipmentManagement {
 
     public static void addShipment(Shipment shipment, Product product, boolean fromRedo, GregorianCalendar calendar) {
 
-        if (findShipmentByID(shipment.getShipmentID()) != null)
+        if (exists(shipment.getShipmentID()))
             throw new AlertException("The shipment id already exist");
 
         Action action = new Action(calendar,"Add Shipment",shipment,product.getProductID(),"+"+shipment.getQuantity());
@@ -97,7 +100,7 @@ public class ShipmentManagement {
         if(action.getAction().equals("Approve Shipment")) {
             //To delete it from inventory and return it to queue
             product.getInventoryStockList().delete(product.getApprovedList(), shipment);
-            product.getShipmentsQueue().addFirst(shipment);
+            addFirst(shipment,product.getShipmentsQueue());
             //To add it for history
             newLog.setAction("Undo Approve "+shipment.getShipmentID());
             newLog.setInventory(newLog.getInventory().replaceFirst(shipment.getShipmentID()+",",""));
@@ -107,7 +110,7 @@ public class ShipmentManagement {
         } else if(action.getAction().equals("Cancel Shipment")) {
             //To delete it cancel list and return it to queue
             product.getCanceledShipments().delete(product.getCancelledList(), shipment);
-            product.getShipmentsQueue().addFirst(shipment);
+            addFirst(shipment,product.getShipmentsQueue());
             //To add it for history
             newLog.setAction("Undo Cancel "+shipment.getShipmentID());
             newLog.setCanceled(newLog.getCanceled().replaceFirst(shipment.getShipmentID()+",",""));
@@ -116,7 +119,7 @@ public class ShipmentManagement {
             newLog.setUndoStack(newLog.getUndoStack().replaceFirst("Cancel "+shipment.getShipmentID()+",",""));
         }else if(action.getAction().equals("Add Shipment")) {
             //To delete it from queue
-            product.getShipmentsQueue().deleteLast();
+            deleteLast(product.getShipmentsQueue());
             //To add it for history
             newLog.setAction("Undo Add "+shipment.getShipmentID());
             newLog.setShipmentQueue(newLog.getShipmentQueue().replaceFirst(shipment.getShipmentID()+"->",""));
@@ -177,7 +180,7 @@ public class ShipmentManagement {
 
     //view stock on the ShipmentManagementMenu class
 
-    private static Shipment findShipmentByID(String shipmentID) {
+    private static boolean exists(String shipmentID) {
 
         Shipment shipment = new Shipment(shipmentID,"P0",0,new GregorianCalendar());
 
@@ -186,19 +189,70 @@ public class ShipmentManagement {
                 //to check the approved list
                 Shipment approved = currProd.getInventoryStockList().find(currProd.getApprovedList(), shipment);
                 Shipment canceled = currProd.getCanceledShipments().find(currProd.getCancelledList(), shipment);
-                Shipment queue = currProd.getShipmentsQueue().find(shipment);
                 if (approved != null)
-                    return approved;
+                    return true;
 
                 //to check the cancel list
                 if (canceled != null)
-                    return canceled;
+                    return true;
 
-                if(queue != null)
-                    return queue;
+                if(exists(shipmentID,currProd.getShipmentsQueue()))
+                    return true;
             }
         }
-        return null;
+        return false;
     }
 
+    public static void addFirst(Shipment data,Queue<Shipment> q1){
+        Queue<Shipment> q2 = new Queue<>();
+
+        while(!q1.isEmpty()){
+            q2.enqueue(q1.dequeue());
+        }
+
+        q1.enqueue(data);
+        while (!q2.isEmpty()) {
+            q1.enqueue(q2.dequeue());
+        }
+    }
+
+    public static Shipment deleteLast(Queue<Shipment> q1) {
+        if (q1.isEmpty()) {
+            return null;
+        }
+
+        Queue<Shipment> q2 = new Queue<>();
+        Shipment lastElement = null;
+
+        while (!q1.isEmpty()) {
+            lastElement = q1.dequeue();
+            if (!q1.isEmpty()) {
+                q2.enqueue(lastElement);
+            }
+        }
+
+        while (!q2.isEmpty()) {
+            q1.enqueue(q2.dequeue());
+        }
+
+        return lastElement;
+    }
+
+    public static boolean exists(String shipmentID,Queue<Shipment> q1){
+
+        Queue<Shipment> q2 = new Queue<>();
+        boolean exists = false;
+
+        while(!q1.isEmpty()){
+            Shipment curr = q1.dequeue();
+            q2.enqueue(curr);
+            if(curr.getShipmentID().equals(shipmentID))
+                exists = true;
+        }
+
+        while (!q2.isEmpty()) {
+            q1.enqueue(q2.dequeue());
+        }
+        return exists;
+    }
 }
