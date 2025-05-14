@@ -1,18 +1,22 @@
 package com.example.project3.Classes;
 
+import com.example.project3.DataStructures.Stack;
+
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 public class Shipment implements Comparable<Shipment>{
 
     private String shipmentID;
-    private int productID;
+    private String productID;
     private int quantity;
     private GregorianCalendar date;
 
     //i add this to know if it was canceled or approved or added
-    private char modify;
+    private Stack<Character> modify = new Stack<>();
+    private Stack<Character> undoHistory = new Stack<>();
 
-    public Shipment(String shipmentID, int productID, int quantity, GregorianCalendar date) {
+    public Shipment(String shipmentID, String productID, int quantity, GregorianCalendar date) {
         setShipmentID(shipmentID);
         setProductID(productID);
         setQuantity(quantity);
@@ -24,14 +28,18 @@ public class Shipment implements Comparable<Shipment>{
     }
 
     public void setShipmentID(String shipmentID) {
+        if(!shipmentID.matches("^SHP\\d+$"))
+            throw new AlertException("Shipment ID must start with SHP followed by a number.");
         this.shipmentID = shipmentID;
     }
 
-    public int getProductID() {
+    public String getProductID() {
         return productID;
     }
 
-    public void setProductID(int productID) {
+    public void setProductID(String productID) {
+        if(!productID.matches("^P\\d+$"))
+            throw new AlertException("Product ID must start with P followed by a number.");
         this.productID = productID;
     }
 
@@ -48,18 +56,34 @@ public class Shipment implements Comparable<Shipment>{
     }
 
     public void setDate(GregorianCalendar date) {
+        if(date.after(new GregorianCalendar()))
+            throw new AlertException("Date cannot be in the future.");
         this.date = date;
     }
 
-
-    public char getModify() {
-        return modify;
+    public void pushModify(char c) {
+        modify.push(c);
     }
 
-    public void setModify(char modify) {
-        this.modify = modify;
+    public char popModify() {
+        return modify.pop();
     }
 
+    public void pushUndoHistory(char c) {
+        undoHistory.push(c);
+    }
+
+    public char popUndoHistory() {
+        return undoHistory.pop();
+    }
+
+    public void clearUndoHistory(){
+        undoHistory.clear();
+    }
+
+    public String dateToString(){
+        return date.get(Calendar.YEAR)+"-"+(date.get(Calendar.MONTH)+1)+"-"+date.get(Calendar.DAY_OF_MONTH);
+    }
 
     @Override
     public int compareTo(Shipment o) {
@@ -72,5 +96,10 @@ public class Shipment implements Comparable<Shipment>{
             return shipmentID.equals(((Shipment)o).getShipmentID());
         }
         return false;
+    }
+
+    @Override
+    public String toString() {
+        return shipmentID+","+productID+","+quantity+","+dateToString();
     }
 }

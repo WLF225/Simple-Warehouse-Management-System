@@ -12,7 +12,7 @@ public class MainMenu extends BorderPane {
 
         Main.stage.setTitle("Main Menu");
 
-        Button[] buttons = {new Button("Category Management"),
+        Button[] buttons = {new Button("Category Management"),new Button("Show Shipments"),
                 new Button("Statistical report"),new Button("Read from file"),
                 new Button("Save to file"), new Button("Exit")};
 
@@ -23,15 +23,15 @@ public class MainMenu extends BorderPane {
         VBox vBox = new VBox(60,buttons);
         vBox.setAlignment(Pos.CENTER);
 
-
         setCenter(vBox);
-
 
         scene.getStylesheets().add(getClass().getResource("/styles.css").toExternalForm());
 
         buttons[0].setOnAction(e -> scene.setRoot(new CategoryManagementMenu(scene)));
 
-        buttons[4].setOnAction(e -> System.exit(0));
+        buttons[1].setOnAction(e -> scene.setRoot(new ShowShipments(scene)));
+
+        buttons[5].setOnAction(e -> System.exit(0));
 
     }
 

@@ -1,5 +1,8 @@
 package com.example.project3.DataStructures;
 
+import javafx.collections.ObservableList;
+
+import java.util.Collections;
 import java.util.Iterator;
 
 public class CursorArray<T extends Comparable<T>> implements Iterable<T>{
@@ -51,7 +54,6 @@ public class CursorArray<T extends Comparable<T>> implements Iterable<T>{
             }
             capacity = capacity+5;
             cA = cursorArray.cA;
-            System.out.println(1);
             return insertFirst(l,data);
         }
         cA[i] = new CNode<>(data, cA[l].getNext());
@@ -87,10 +89,12 @@ public class CursorArray<T extends Comparable<T>> implements Iterable<T>{
 
 
     public boolean find(int l,T data){
-        if(isEmpty(l) || isNull(l))
-            return false;
+
 
         while(l !=0){
+            if(isEmpty(l) || isNull(l))
+                return false;
+
             l = cA[l].getNext();
             if(cA[l].getData().equals(data))
                 return true;
@@ -158,23 +162,22 @@ public class CursorArray<T extends Comparable<T>> implements Iterable<T>{
     }
 
     public class Iteratooor implements Iterator<T> {
-
-        int l;
+        private int currentIndex;
 
         public Iteratooor(int l) {
-            this.l = l;
+            this.currentIndex = cA[l].getNext();
         }
-
-        private CNode<T> c = cA[l];
 
         @Override
         public boolean hasNext() {
-            return c.getNext() != 0;
+            return currentIndex != 0;
         }
 
         @Override
         public T next() {
-            return cA[c.getNext()].getData();
+            T data = cA[currentIndex].getData();
+            currentIndex = cA[currentIndex].getNext();
+            return data;
         }
     }
 
@@ -191,6 +194,12 @@ public class CursorArray<T extends Comparable<T>> implements Iterable<T>{
             return str;
         str += "\n"+i+"\t"+cA[i];
         return print(str,i+1);
+    }
+
+    public void toObservable(int l,ObservableList<T> list){
+        for(T data:this){
+            list.add(data);
+        }
     }
 
 }

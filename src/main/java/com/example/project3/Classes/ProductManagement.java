@@ -8,7 +8,7 @@ public class ProductManagement {
 
     public static void addProduct(Product product) {
 
-        if (iDExists(product.getProductID()))
+        if (findProductById(product.getProductID()) != null)
             throw new AlertException("This product ID already exists.");
 
         ProductCategory cat = CategoryManagement.searchCategory(product.getCategoryName());
@@ -18,6 +18,7 @@ public class ProductManagement {
             CategoryManagement.addCategory(cat);
         }
         cat.getProductList().insetSorted(product);
+
         if (Integer.parseInt(product.getProductID().replace("P","")) >= productID)
             productID = Integer.parseInt(product.getProductID().replace("P","")) + 1;
     }
@@ -60,17 +61,16 @@ public class ProductManagement {
         return null;
     }
 
-    public static boolean iDExists(String productName){
-        ListIterator<ProductCategory> categoryIterator = CategoryManagement.categoriesList.iterator();
-        while (categoryIterator.hasNext()){
-            ListIterator<Product> productIterator = categoryIterator.next().getProductList().iterator();
-            while (productIterator.hasNext()) {
-                Product curr = productIterator.next();
-                if (curr.getProductID().equalsIgnoreCase(productName))
-                    return true;
+    public static Product findProductById(String productID){
+        for (ProductCategory category : CategoryManagement.categoriesList){
+            for (Product product : category.getProductList()) {
+                if (product.getProductID().equalsIgnoreCase(productID))
+                    return product;
+                if(product.getProductID().compareTo(productID) > 0)
+                    break;
             }
         }
-        return false;
+        return null;
     }
 
     //Display product and sort product in ProductManagementMenu class

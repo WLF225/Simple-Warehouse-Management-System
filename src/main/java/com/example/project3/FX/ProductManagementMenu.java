@@ -16,7 +16,6 @@ import java.util.ListIterator;
 public class ProductManagementMenu extends BorderPane {
 
 
-
     public ProductManagementMenu(Scene scene,ProductCategory productCategory) {
 
         Main.stage.setTitle("Product Management for "+productCategory.getCategoryName());
@@ -26,15 +25,16 @@ public class ProductManagementMenu extends BorderPane {
         sortCB.setValue("Sort by name");
 
         ComboBox<String> filterCB = new ComboBox<>();
-        filterCB.getItems().addAll("Show all items","Show Active items","Show Inactive items");
-        filterCB.setValue("Show all items");
+        filterCB.getItems().addAll("Show all products","Show Active products","Show Inactive products");
+        filterCB.setValue("Show all products");
 
 
         TextField searchTextField = new TextField();
 
         Button[] buttons = {new Button("Search for Product by the name"),new Button("Search for Product by the ID"),
                 new Button("Add Product"), new Button("Edit Product"), new Button("Delete Product"),
-                new Button("Back"),new Button("Previous category"),new Button("Next category")};
+                new Button("Shipment Management for this product"), new Button("Back"),
+                new Button("Previous category"),new Button("Next category")};
 
         HBox hBox = new HBox(40,searchTextField,buttons[0],buttons[1], sortCB,filterCB);
         hBox.setPadding(new javafx.geometry.Insets(0,0,40,0));
@@ -86,9 +86,9 @@ public class ProductManagementMenu extends BorderPane {
         });
 
         filterCB.setOnAction(e -> {
-            if (filterCB.getValue().equals("Show all items")){
+            if (filterCB.getValue().equals("Show all products")){
                 tableView.setItems(observableList);
-            }else if (filterCB.getValue().equals("Show Active items")){
+            }else if (filterCB.getValue().equals("Show Active products")){
                 ObservableList<Product> activeList = FXCollections.observableArrayList(observableList);
                 activeList.removeIf(product -> product.getStatus() == 'I');
                 tableView.setItems(activeList);
@@ -167,9 +167,21 @@ public class ProductManagementMenu extends BorderPane {
             alert.showAndWait();
         });
 
-        buttons[5].setOnAction(e -> scene.setRoot(new CategoryManagementMenu(scene)));
+        buttons[5].setOnAction(e -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            if (tableView.getSelectionModel().getSelectedItem() == null) {
+                alert.setTitle("Select Category");
+                alert.setHeaderText(null);
+                alert.setContentText("Please select a product to delete");
+                alert.showAndWait();
+                return;
+            }
+            scene.setRoot(new ShipmentManagementMenu(scene,tableView.getSelectionModel().getSelectedItem(),productCategory));
+        });
 
-        buttons[6].setOnAction(e -> {
+        buttons[6].setOnAction(e -> scene.setRoot(new CategoryManagementMenu(scene)));
+
+        buttons[7].setOnAction(e -> {
             ListIterator<ProductCategory> curr = CategoryManagement.categoriesList.iterator();
             while (curr.hasNext()){
                 if (curr.next() == productCategory) {
@@ -179,7 +191,7 @@ public class ProductManagementMenu extends BorderPane {
             }
         });
 
-        buttons[7].setOnAction(e -> {
+        buttons[8].setOnAction(e -> {
             ListIterator<ProductCategory> curr = CategoryManagement.categoriesList.iterator();
             while (curr.hasNext()){
                 if (curr.next() == productCategory) {
@@ -194,18 +206,18 @@ public class ProductManagementMenu extends BorderPane {
         while (curr.hasNext()){
             ProductCategory currC = curr.next();
             if (currC == productCategory && !curr.hasNext()) {
-                buttons[7].setDisable(true);
+                buttons[8].setDisable(true);
             }else if (currC == productCategory && isFirst) {
-                buttons[6].setDisable(true);
+                buttons[7].setDisable(true);
             }
             isFirst = false;
         }
 
-        HBox nextPrevButtonsHB = new HBox(40,buttons[6],buttons[7]);
+        HBox nextPrevButtonsHB = new HBox(40,buttons[7],buttons[8]);
         nextPrevButtonsHB.setAlignment(Pos.CENTER);
         nextPrevButtonsHB.setPadding(new javafx.geometry.Insets(40,0,0,0));
 
-        HBox buttonsHB = new HBox(40,buttons[2],buttons[3],buttons[4],buttons[5]);
+        HBox buttonsHB = new HBox(40,buttons[2],buttons[3],buttons[4],buttons[5],buttons[6]);
         VBox buttonsVBox = new VBox(40,nextPrevButtonsHB,buttonsHB);
 
         buttonsHB.setPadding(new javafx.geometry.Insets(40,0,0,0));

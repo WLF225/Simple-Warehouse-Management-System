@@ -16,8 +16,13 @@ public class CircularLinkedList<T> implements Iterable<T> {
             head = newNode;
             head.setNext(head);
         } else {
+            Node<T> curr = head;
+            while (curr.getNext() != head) {
+                curr = curr.getNext();
+            }
             newNode.setNext(head);
             head = newNode;
+            curr.setNext(head);
         }
     }
 
@@ -65,7 +70,9 @@ public class CircularLinkedList<T> implements Iterable<T> {
 
         @Override
         public boolean hasNext() {
-            return curr.getNext() != head;
+            if (curr == null)
+                return false;
+            return curr!= head;
         }
 
         @Override

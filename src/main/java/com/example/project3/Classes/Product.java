@@ -17,8 +17,8 @@ public class Product implements Comparable<Product>{
     private Stack<Shipment> undoStack = new Stack<>();
     private Stack<Shipment> redoStack = new Stack<>();
     private CursorArray<Shipment> canceledShipments = new CursorArray<>(10);
-    private int approvedList;
-    private int cancelledList;
+    private int approvedList = inventoryStockList.createList();
+    private int cancelledList = canceledShipments.createList();
     //To make the date of operations
     private ObservableList<Log> logList = FXCollections.observableArrayList();
 
@@ -28,8 +28,6 @@ public class Product implements Comparable<Product>{
         setProductName(productName);
         setCategoryName(categoryName);
         setStatus(status);
-        approvedList = inventoryStockList.createList();
-        cancelledList = canceledShipments.createList();
     }
 
     public String getProductID() {
@@ -37,6 +35,8 @@ public class Product implements Comparable<Product>{
     }
 
     public void setProductID(String productID) {
+        if(!productID.matches("^P\\d+$"))
+            throw new AlertException("Product ID must start with SHP followed by a number.");
         this.productID = productID;
     }
 
@@ -122,7 +122,7 @@ public class Product implements Comparable<Product>{
 
     @Override
     public int compareTo(Product o) {
-        return productName.compareTo(o.getProductName());
+        return productID.compareTo(o.getProductID());
     }
 
     @Override
@@ -134,5 +134,10 @@ public class Product implements Comparable<Product>{
             return false;
         }
         return false;
+    }
+
+    @Override
+    public String toString(){
+        return productID+","+productName+","+categoryName+","+((status=='A')?"Active":"Inactive");
     }
 }

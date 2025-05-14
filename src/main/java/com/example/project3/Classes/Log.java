@@ -1,5 +1,8 @@
 package com.example.project3.Classes;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
 public class Log implements Cloneable{
 
     public static int indexVar = 1;
@@ -10,6 +13,7 @@ public class Log implements Cloneable{
     private String canceled;
     private String undoStack;
     private String redoStack;
+    private GregorianCalendar date;
 
     public Log(String action, String shipmentQueue, String inventory, String canceled, String undoStack, String redoStack) {
         this.index = indexVar++;
@@ -19,6 +23,7 @@ public class Log implements Cloneable{
         this.canceled = canceled;
         this.undoStack = undoStack;
         this.redoStack = redoStack;
+        date = new GregorianCalendar();
     }
 
     public int getIndex() {
@@ -77,6 +82,22 @@ public class Log implements Cloneable{
         this.redoStack = redoStack;
     }
 
+    public GregorianCalendar getDate() {
+        return date;
+    }
+
+    public void setDate(GregorianCalendar date) {
+        this.date = date;
+    }
+
+    public String dateToString(){
+        return date.get(Calendar.YEAR)+"-"+(date.get(Calendar.MONTH)+1)+"-"
+                +date.get(Calendar.DAY_OF_MONTH)+" "
+                +((date.get(Calendar.HOUR)<10)?"0"+date.get(Calendar.HOUR):date.get(Calendar.HOUR))+":"
+                +((date.get(Calendar.MINUTE)<10)?"0"+date.get(Calendar.MINUTE):date.get(Calendar.MINUTE))+":"
+                +((date.get(Calendar.SECOND)<10)?"0"+date.get(Calendar.SECOND):date.get(Calendar.SECOND));
+    }
+
     @Override
     public Log clone(){
         //To make a copy with id + 1
@@ -84,4 +105,10 @@ public class Log implements Cloneable{
         return log;
     }
 
+    @Override
+    public String toString() {
+        String[] string = action.split(" ");
+
+        return dateToString()+"|";
+    }
 }

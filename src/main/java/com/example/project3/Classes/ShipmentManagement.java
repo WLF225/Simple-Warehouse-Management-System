@@ -2,12 +2,14 @@ package com.example.project3.Classes;
 
 public class ShipmentManagement {
 
+    public static int shipmentID = 1;
+
     public static void addShipment(Shipment shipment, Product product,boolean fromRedo) {
 
         if (shipmentIDExist(shipment))
             throw new AlertException("The shipment id already exist");
 
-        shipment.setModify('A');
+        shipment.pushModify('A');
 
         product.getUndoStack().push(shipment);
 
@@ -20,34 +22,39 @@ public class ShipmentManagement {
             //To add it to history
             Log newLog = product.getLogList().getLast().clone();
             newLog.setRedoStack("");
-            newLog.setAction("Add "+shipment.getProductID()+" (+"+shipment.getQuantity()+")");
-            newLog.setShipmentQueue(newLog.getShipmentQueue()+shipment.getProductID()+"->");
-            newLog.setUndoStack(newLog.getUndoStack()+"Add "+shipment.getProductID()+",");
+            newLog.setAction("Add "+shipment.getShipmentID()+" (+"+shipment.getQuantity()+")");
+            newLog.setShipmentQueue(newLog.getShipmentQueue()+shipment.getShipmentID()+"->");
+            newLog.setUndoStack(newLog.getUndoStack()+"Add "+shipment.getShipmentID()+",");
             product.getLogList().add(newLog);
         }
+
+        if (Integer.parseInt(shipment.getShipmentID().replace("SHP","")) >= shipmentID)
+            shipmentID = Integer.parseInt(shipment.getShipmentID().replace("SHP","")) + 1;
     }
 
     public static void approveShipment(Product product,boolean fromRedo) {
+
         Shipment shipment = product.getShipmentsQueue().dequeue();
+
         if(shipment == null)
             throw new AlertException("The shipment queue is empty.");
 
-        shipment.setModify('P');
+        shipment.pushModify('P');
 
         product.getUndoStack().push(shipment);
+
         product.getInventoryStockList().insertFirst(product.getApprovedList(),shipment);
-
-
 
         if(!fromRedo) {
             product.getRedoStack().clear();
+            shipment.clearUndoHistory();
             //To add it to history
             Log newLog = product.getLogList().getLast().clone();
             newLog.setRedoStack("");
-            newLog.setAction("Approve "+shipment.getProductID());
-            newLog.setShipmentQueue(newLog.getShipmentQueue().replaceFirst(shipment.getProductID()+"->",""));
-            newLog.setUndoStack(newLog.getUndoStack()+"Approve "+shipment.getProductID()+",");
-            newLog.setInventory(newLog.getInventory()+shipment.getProductID()+",");
+            newLog.setAction("Approve "+shipment.getShipmentID());
+            newLog.setShipmentQueue(newLog.getShipmentQueue().replaceFirst(shipment.getShipmentID()+"->",""));
+            newLog.setUndoStack(newLog.getUndoStack()+"Approve "+shipment.getShipmentID()+",");
+            newLog.setInventory(newLog.getInventory()+shipment.getShipmentID()+",");
             product.getLogList().add(newLog);
         }
 
@@ -58,23 +65,21 @@ public class ShipmentManagement {
         if(shipment == null)
             throw new AlertException("The shipment queue is empty.");
 
-        shipment.setModify('C');
+        shipment.pushModify('C');
 
         product.getUndoStack().push(shipment);
         product.getCanceledShipments().insertFirst(product.getCancelledList(),shipment);
 
-
-
         if(!fromRedo) {
             product.getRedoStack().clear();
+            shipment.clearUndoHistory();
             //To add it to history
             Log newLog = product.getLogList().getLast().clone();
             newLog.setRedoStack("");
-            newLog.setAction("Cancel "+shipment.getProductID());
-            newLog.setShipmentQueue(newLog.getShipmentQueue().replaceFirst(shipment.getProductID()+"->",""));
-            newLog.setUndoStack(newLog.getUndoStack()+"Cancel "+shipment.getProductID()+",");
-            newLog.setCanceled(newLog.getCanceled()+shipment.getProductID()+",");
-            newLog.setCanceled(newLog.getCanceled()+shipment.getProductID()+",");
+            newLog.setAction("Cancel "+shipment.getShipmentID());
+            newLog.setShipmentQueue(newLog.getShipmentQueue().replaceFirst(shipment.getShipmentID()+"->",""));
+            newLog.setUndoStack(newLog.getUndoStack()+"Cancel "+shipment.getShipmentID()+",");
+            newLog.setCanceled(newLog.getCanceled()+shipment.getShipmentID()+",");
             product.getLogList().add(newLog);
         }
 
@@ -88,40 +93,43 @@ public class ShipmentManagement {
 
         Log newLog = product.getLogList().getLast().clone();
 
-        if(shipment.getModify() == 'P') {
+        char modify = shipment.popModify();
+
+        if(modify == 'P') {
             //To delete it from inventory and return it to queue
             product.getInventoryStockList().delete(product.getApprovedList(), shipment);
             product.getShipmentsQueue().addFirst(shipment);
             //To add it for history
-            newLog.setAction("Undo Approve "+shipment.getProductID());
+            newLog.setAction("Undo Approve "+shipment.getShipmentID());
             newLog.setInventory(newLog.getInventory().replaceFirst(shipment.getShipmentID()+",",""));
-            newLog.setShipmentQueue(newLog.getShipmentQueue()+shipment.getProductID()+"->");
-            newLog.setRedoStack(newLog.getRedoStack()+"Approve "+shipment.getProductID()+",");
-            newLog.setUndoStack(newLog.getUndoStack().replaceFirst("Approve "+shipment.getProductID()+",",""));
-        } else if(shipment.getModify() == 'C') {
+            newLog.setShipmentQueue(shipment.getShipmentID()+"->"+newLog.getShipmentQueue());
+            newLog.setRedoStack(newLog.getRedoStack()+"Approve "+shipment.getShipmentID()+",");
+            newLog.setUndoStack(newLog.getUndoStack().replaceFirst("Approve "+shipment.getShipmentID()+",",""));
+        } else if(modify == 'C') {
             //To delete it cancel list and return it to queue
             product.getCanceledShipments().delete(product.getCancelledList(), shipment);
             product.getShipmentsQueue().addFirst(shipment);
             //To add it for history
-            newLog.setAction("Undo Cancel "+shipment.getProductID());
+            newLog.setAction("Undo Cancel "+shipment.getShipmentID());
             newLog.setCanceled(newLog.getCanceled().replaceFirst(shipment.getShipmentID()+",",""));
-            newLog.setShipmentQueue(newLog.getShipmentQueue()+shipment.getProductID()+"->");
-            newLog.setRedoStack(newLog.getRedoStack()+"Cancel "+shipment.getProductID()+",");
-            newLog.setUndoStack(newLog.getUndoStack().replaceFirst("Cancel "+shipment.getProductID()+",",""));
-        }else if(shipment.getModify() == 'A') {
+            newLog.setShipmentQueue(shipment.getShipmentID()+"->"+newLog.getShipmentQueue());
+            newLog.setRedoStack(newLog.getRedoStack()+"Cancel "+shipment.getShipmentID()+",");
+            newLog.setUndoStack(newLog.getUndoStack().replaceFirst("Cancel "+shipment.getShipmentID()+",",""));
+        }else if(modify == 'A') {
             //To delete it from queue
             product.getShipmentsQueue().deleteLast();
             //To add it for history
-            newLog.setAction("Undo Add "+shipment.getProductID());
-            newLog.setShipmentQueue(newLog.getShipmentQueue().replaceFirst(shipment.getProductID()+"->",""));
-            newLog.setRedoStack(newLog.getRedoStack()+"Add "+shipment.getProductID()+",");
-            newLog.setUndoStack(newLog.getUndoStack().replaceFirst("Add "+shipment.getProductID()+",",""));
+            newLog.setAction("Undo Add "+shipment.getShipmentID());
+            newLog.setShipmentQueue(newLog.getShipmentQueue().replaceFirst(shipment.getShipmentID()+"->",""));
+            newLog.setRedoStack(newLog.getRedoStack()+"Add "+shipment.getShipmentID()+",");
+            newLog.setUndoStack(newLog.getUndoStack().replaceFirst("Add "+shipment.getShipmentID()+",",""));
         }else{
             Log.indexVar--;
             throw new AlertException("Wrong Modify code.");
         }
 
         product.getLogList().add(newLog);
+        shipment.pushUndoHistory(modify);
         product.getRedoStack().push(shipment);
 
     }
@@ -133,31 +141,33 @@ public class ShipmentManagement {
 
         Log newLog = product.getLogList().getLast().clone();
 
-        if(shipment.getModify() == 'P'){
+        char modify = shipment.popUndoHistory();
+
+        if(modify == 'P'){
             approveShipment(product,true);
             //To add it for history
-            newLog.setAction("Redo Approve "+shipment.getProductID());
-            newLog.setShipmentQueue(newLog.getShipmentQueue().replaceFirst(shipment.getProductID()+"->",""));
-            newLog.setInventory(newLog.getInventory()+shipment.getProductID()+",");
-            newLog.setUndoStack(newLog.getUndoStack()+"Approve "+shipment.getProductID()+",");
-            newLog.setRedoStack(newLog.getRedoStack().replaceFirst("Approve "+shipment.getProductID()+",",""));
+            newLog.setAction("Redo Approve "+shipment.getShipmentID());
+            newLog.setShipmentQueue(newLog.getShipmentQueue().replaceFirst(shipment.getShipmentID()+"->",""));
+            newLog.setInventory(newLog.getInventory()+shipment.getShipmentID()+",");
+            newLog.setUndoStack(newLog.getUndoStack()+"Approve "+shipment.getShipmentID()+",");
+            newLog.setRedoStack(newLog.getRedoStack().replaceFirst("Approve "+shipment.getShipmentID()+",",""));
 
-        } else if(shipment.getModify() == 'C'){
+        } else if(modify == 'C'){
             cancelShipment(product,true);
             //To add it for history
-            newLog.setAction("Redo Cancel "+shipment.getProductID());
-            newLog.setShipmentQueue(newLog.getShipmentQueue().replaceFirst(shipment.getProductID()+"->",""));
-            newLog.setCanceled(newLog.getCanceled()+shipment.getProductID()+",");
-            newLog.setUndoStack(newLog.getUndoStack()+"Cancel "+shipment.getProductID()+",");
-            newLog.setRedoStack(newLog.getRedoStack().replaceFirst("Cancel "+shipment.getProductID()+",",""));
+            newLog.setAction("Redo Cancel "+shipment.getShipmentID());
+            newLog.setShipmentQueue(newLog.getShipmentQueue().replaceFirst(shipment.getShipmentID()+"->",""));
+            newLog.setCanceled(newLog.getCanceled()+shipment.getShipmentID()+",");
+            newLog.setUndoStack(newLog.getUndoStack()+"Cancel "+shipment.getShipmentID()+",");
+            newLog.setRedoStack(newLog.getRedoStack().replaceFirst("Cancel "+shipment.getShipmentID()+",",""));
 
-        } else if(shipment.getModify() == 'A'){
+        } else if(modify == 'A'){
             addShipment(shipment,product,true);
             //To add it for history
-            newLog.setAction("Redo Add "+shipment.getProductID());
-            newLog.setShipmentQueue(newLog.getShipmentQueue()+shipment.getProductID()+"->");
-            newLog.setUndoStack(newLog.getUndoStack()+"Add "+shipment.getProductID()+",");
-            newLog.setRedoStack(newLog.getRedoStack().replaceFirst("Add "+shipment.getProductID()+",",""));
+            newLog.setAction("Redo Add "+shipment.getShipmentID());
+            newLog.setShipmentQueue(newLog.getShipmentQueue()+shipment.getShipmentID()+"->");
+            newLog.setUndoStack(newLog.getUndoStack()+"Add "+shipment.getShipmentID()+",");
+            newLog.setRedoStack(newLog.getRedoStack().replaceFirst("Add "+shipment.getShipmentID()+",",""));
         } else{
             Log.indexVar--;
             throw new AlertException("Wrong Modify code.");
