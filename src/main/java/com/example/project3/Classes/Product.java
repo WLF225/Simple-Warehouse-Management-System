@@ -14,8 +14,8 @@ public class Product implements Comparable<Product>{
     private char status;
     private Queue<Shipment> shipmentsQueue = new Queue<>();
     private CursorArray<Shipment> inventoryStockList = new CursorArray<>(10);
-    private Stack<Shipment> undoStack = new Stack<>();
-    private Stack<Shipment> redoStack = new Stack<>();
+    private Stack<Action> undoStack = new Stack<>();
+    private Stack<Action> redoStack = new Stack<>();
     private CursorArray<Shipment> canceledShipments = new CursorArray<>(10);
     private int approvedList = inventoryStockList.createList();
     private int cancelledList = canceledShipments.createList();
@@ -77,19 +77,19 @@ public class Product implements Comparable<Product>{
         this.inventoryStockList = inventoryStockList;
     }
 
-    public Stack<Shipment> getUndoStack() {
+    public Stack<Action> getUndoStack() {
         return undoStack;
     }
 
-    public void setUndoStack(Stack<Shipment> undoStack) {
+    public void setUndoStack(Stack<Action> undoStack) {
         this.undoStack = undoStack;
     }
 
-    public Stack<Shipment> getRedoStack() {
+    public Stack<Action> getRedoStack() {
         return redoStack;
     }
 
-    public void setRedoStack(Stack<Shipment> redoStack) {
+    public void setRedoStack(Stack<Action> redoStack) {
         this.redoStack = redoStack;
     }
 

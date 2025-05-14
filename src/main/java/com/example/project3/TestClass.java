@@ -1,6 +1,7 @@
 package com.example.project3;
 
 import com.example.project3.Classes.*;
+import com.example.project3.DataStructures.CircularLinkedList;
 import com.example.project3.DataStructures.CursorArray;
 import com.example.project3.DataStructures.Queue;
 import javafx.collections.ObservableList;
@@ -14,12 +15,10 @@ public class TestClass {
     public static void main(String[] args) {
 
 
-        CursorArray<Integer> list = new CursorArray<>(10);
-
-        int l = list.createList();
+        CircularLinkedList<Integer> list = new CircularLinkedList<>();
 
         for(int i = 0; i < 20;i++)
-            list.insertFirst(l,i);
+            list.insertFirst(i);
 
         for(int num:list)
             System.out.println(num);

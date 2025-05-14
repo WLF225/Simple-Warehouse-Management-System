@@ -73,7 +73,7 @@ public class AddShipmentMenu extends BorderPane {
                 if(prod == null)
                     throw new AlertException("Product with this ID not found.");
 
-                ShipmentManagement.addShipment(ship,prod,false);
+                ShipmentManagement.addShipment(ship,prod,false,calendar);
 
                 buttons[1].fire();
 

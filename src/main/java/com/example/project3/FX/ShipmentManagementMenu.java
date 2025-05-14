@@ -13,6 +13,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
+import java.util.GregorianCalendar;
+
 public class ShipmentManagementMenu extends BorderPane {
 
     public ShipmentManagementMenu(Scene scene, Product product, ProductCategory productCategory) {
@@ -89,7 +91,7 @@ public class ShipmentManagementMenu extends BorderPane {
             alert.setHeaderText(null);
             alert.setContentText("Are you sure you want to approve shipment " + ship.getShipmentID() + "?");
             if (alert.showAndWait().get() == javafx.scene.control.ButtonType.OK) {
-                ShipmentManagement.approveShipment(product,false);
+                ShipmentManagement.approveShipment(product,false, new GregorianCalendar());
                 Alert alert1 = new Alert(Alert.AlertType.INFORMATION);
                 alert1.setTitle("Shipment Approved");
                 alert1.setHeaderText(null);
@@ -106,7 +108,7 @@ public class ShipmentManagementMenu extends BorderPane {
             alert.setHeaderText(null);
             alert.setContentText("Are you sure you want to cancel shipment " + ship.getShipmentID() + "?");
             if (alert.showAndWait().get() == javafx.scene.control.ButtonType.OK) {
-                ShipmentManagement.cancelShipment(product,false);
+                ShipmentManagement.cancelShipment(product,false, new GregorianCalendar());
                 Alert alert1 = new Alert(Alert.AlertType.INFORMATION);
                 alert1.setTitle("Shipment Cancelled");
                 alert1.setHeaderText(null);

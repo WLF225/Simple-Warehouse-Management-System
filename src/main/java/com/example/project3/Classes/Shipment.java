@@ -12,9 +12,6 @@ public class Shipment implements Comparable<Shipment>{
     private int quantity;
     private GregorianCalendar date;
 
-    //i add this to know if it was canceled or approved or added
-    private Stack<Character> modify = new Stack<>();
-    private Stack<Character> undoHistory = new Stack<>();
 
     public Shipment(String shipmentID, String productID, int quantity, GregorianCalendar date) {
         setShipmentID(shipmentID);
@@ -59,26 +56,6 @@ public class Shipment implements Comparable<Shipment>{
         if(date.after(new GregorianCalendar()))
             throw new AlertException("Date cannot be in the future.");
         this.date = date;
-    }
-
-    public void pushModify(char c) {
-        modify.push(c);
-    }
-
-    public char popModify() {
-        return modify.pop();
-    }
-
-    public void pushUndoHistory(char c) {
-        undoHistory.push(c);
-    }
-
-    public char popUndoHistory() {
-        return undoHistory.pop();
-    }
-
-    public void clearUndoHistory(){
-        undoHistory.clear();
     }
 
     public String dateToString(){

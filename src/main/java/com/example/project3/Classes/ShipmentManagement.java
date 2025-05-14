@@ -1,21 +1,21 @@
 package com.example.project3.Classes;
 
+import java.util.GregorianCalendar;
+
 public class ShipmentManagement {
 
     public static int shipmentID = 1;
 
-    public static void addShipment(Shipment shipment, Product product,boolean fromRedo) {
+    public static void addShipment(Shipment shipment, Product product, boolean fromRedo, GregorianCalendar calendar) {
 
-        if (shipmentIDExist(shipment))
+        if (findShipmentByID(shipment.getShipmentID()) != null)
             throw new AlertException("The shipment id already exist");
 
-        shipment.pushModify('A');
+        Action action = new Action(calendar,"Add Shipment",shipment,product.getProductID(),"+"+shipment.getQuantity());
 
-        product.getUndoStack().push(shipment);
+        product.getUndoStack().push(action);
 
         product.getShipmentsQueue().enqueue(shipment);
-
-
 
         if(!fromRedo) {
             product.getRedoStack().clear();
@@ -32,22 +32,21 @@ public class ShipmentManagement {
             shipmentID = Integer.parseInt(shipment.getShipmentID().replace("SHP","")) + 1;
     }
 
-    public static void approveShipment(Product product,boolean fromRedo) {
+    public static void approveShipment(Product product,boolean fromRedo, GregorianCalendar calendar) {
 
         Shipment shipment = product.getShipmentsQueue().dequeue();
 
         if(shipment == null)
             throw new AlertException("The shipment queue is empty.");
 
-        shipment.pushModify('P');
+        Action action = new Action(calendar,"Approve Shipment",shipment,product.getProductID(),"+"+shipment.getQuantity());
 
-        product.getUndoStack().push(shipment);
+        product.getUndoStack().push(action);
 
         product.getInventoryStockList().insertFirst(product.getApprovedList(),shipment);
 
         if(!fromRedo) {
             product.getRedoStack().clear();
-            shipment.clearUndoHistory();
             //To add it to history
             Log newLog = product.getLogList().getLast().clone();
             newLog.setRedoStack("");
@@ -60,19 +59,20 @@ public class ShipmentManagement {
 
     }
 
-    public static void cancelShipment(Product product,boolean fromRedo){
+    public static void cancelShipment(Product product,boolean fromRedo, GregorianCalendar calendar){
+
         Shipment shipment = product.getShipmentsQueue().dequeue();
+
         if(shipment == null)
             throw new AlertException("The shipment queue is empty.");
 
-        shipment.pushModify('C');
+        Action action = new Action(calendar,"Cancel Shipment",shipment,product.getProductID(),"+"+shipment.getQuantity());
 
-        product.getUndoStack().push(shipment);
+        product.getUndoStack().push(action);
         product.getCanceledShipments().insertFirst(product.getCancelledList(),shipment);
 
         if(!fromRedo) {
             product.getRedoStack().clear();
-            shipment.clearUndoHistory();
             //To add it to history
             Log newLog = product.getLogList().getLast().clone();
             newLog.setRedoStack("");
@@ -87,15 +87,14 @@ public class ShipmentManagement {
 
     public static void undo(Product product){
 
-        Shipment shipment = product.getUndoStack().pop();
-        if(shipment == null)
+        Action action = product.getUndoStack().pop();
+        if(action == null)
             throw new AlertException("The undo stack is empty.");
 
+        Shipment shipment = action.getShipment();
         Log newLog = product.getLogList().getLast().clone();
 
-        char modify = shipment.popModify();
-
-        if(modify == 'P') {
+        if(action.getAction().equals("Approve Shipment")) {
             //To delete it from inventory and return it to queue
             product.getInventoryStockList().delete(product.getApprovedList(), shipment);
             product.getShipmentsQueue().addFirst(shipment);
@@ -105,7 +104,7 @@ public class ShipmentManagement {
             newLog.setShipmentQueue(shipment.getShipmentID()+"->"+newLog.getShipmentQueue());
             newLog.setRedoStack(newLog.getRedoStack()+"Approve "+shipment.getShipmentID()+",");
             newLog.setUndoStack(newLog.getUndoStack().replaceFirst("Approve "+shipment.getShipmentID()+",",""));
-        } else if(modify == 'C') {
+        } else if(action.getAction().equals("Cancel Shipment")) {
             //To delete it cancel list and return it to queue
             product.getCanceledShipments().delete(product.getCancelledList(), shipment);
             product.getShipmentsQueue().addFirst(shipment);
@@ -115,7 +114,7 @@ public class ShipmentManagement {
             newLog.setShipmentQueue(shipment.getShipmentID()+"->"+newLog.getShipmentQueue());
             newLog.setRedoStack(newLog.getRedoStack()+"Cancel "+shipment.getShipmentID()+",");
             newLog.setUndoStack(newLog.getUndoStack().replaceFirst("Cancel "+shipment.getShipmentID()+",",""));
-        }else if(modify == 'A') {
+        }else if(action.getAction().equals("Add Shipment")) {
             //To delete it from queue
             product.getShipmentsQueue().deleteLast();
             //To add it for history
@@ -129,22 +128,23 @@ public class ShipmentManagement {
         }
 
         product.getLogList().add(newLog);
-        shipment.pushUndoHistory(modify);
-        product.getRedoStack().push(shipment);
+        product.getRedoStack().push(action);
 
     }
 
     public static void redo(Product product){
-        Shipment shipment = product.getRedoStack().pop();
-        if(shipment == null)
+
+        Action action = product.getRedoStack().pop();
+
+        if(action == null)
             throw new AlertException("The redo stack is empty.");
+
+        Shipment shipment = action.getShipment();
 
         Log newLog = product.getLogList().getLast().clone();
 
-        char modify = shipment.popUndoHistory();
-
-        if(modify == 'P'){
-            approveShipment(product,true);
+        if(action.getAction().equals("Approve Shipment")){
+            approveShipment(product,true,action.getDate());
             //To add it for history
             newLog.setAction("Redo Approve "+shipment.getShipmentID());
             newLog.setShipmentQueue(newLog.getShipmentQueue().replaceFirst(shipment.getShipmentID()+"->",""));
@@ -152,8 +152,8 @@ public class ShipmentManagement {
             newLog.setUndoStack(newLog.getUndoStack()+"Approve "+shipment.getShipmentID()+",");
             newLog.setRedoStack(newLog.getRedoStack().replaceFirst("Approve "+shipment.getShipmentID()+",",""));
 
-        } else if(modify == 'C'){
-            cancelShipment(product,true);
+        } else if(action.getAction().equals("Cancel Shipment")){
+            cancelShipment(product,true,action.getDate());
             //To add it for history
             newLog.setAction("Redo Cancel "+shipment.getShipmentID());
             newLog.setShipmentQueue(newLog.getShipmentQueue().replaceFirst(shipment.getShipmentID()+"->",""));
@@ -161,8 +161,8 @@ public class ShipmentManagement {
             newLog.setUndoStack(newLog.getUndoStack()+"Cancel "+shipment.getShipmentID()+",");
             newLog.setRedoStack(newLog.getRedoStack().replaceFirst("Cancel "+shipment.getShipmentID()+",",""));
 
-        } else if(modify == 'A'){
-            addShipment(shipment,product,true);
+        } else if(action.getAction().equals("Add Shipment")){
+            addShipment(shipment,product,true,shipment.getDate());
             //To add it for history
             newLog.setAction("Redo Add "+shipment.getShipmentID());
             newLog.setShipmentQueue(newLog.getShipmentQueue()+shipment.getShipmentID()+"->");
@@ -177,23 +177,28 @@ public class ShipmentManagement {
 
     //view stock on the ShipmentManagementMenu class
 
-    private static boolean shipmentIDExist(Shipment shipment) {
+    private static Shipment findShipmentByID(String shipmentID) {
+
+        Shipment shipment = new Shipment(shipmentID,"P0",0,new GregorianCalendar());
 
         for (ProductCategory curr : CategoryManagement.categoriesList) {
             for (Product currProd : curr.getProductList()) {
                 //to check the approved list
-                if (currProd.getInventoryStockList().find(currProd.getApprovedList(), shipment))
-                    return true;
+                Shipment approved = currProd.getInventoryStockList().find(currProd.getApprovedList(), shipment);
+                Shipment canceled = currProd.getCanceledShipments().find(currProd.getCancelledList(), shipment);
+                Shipment queue = currProd.getShipmentsQueue().find(shipment);
+                if (approved != null)
+                    return approved;
 
                 //to check the cancel list
-                if (currProd.getCanceledShipments().find(currProd.getCancelledList(), shipment))
-                    return true;
+                if (canceled != null)
+                    return canceled;
 
-                //to check the queue
-                if (currProd.getShipmentsQueue().exist(shipment))
-                    return true;
+                if(queue != null)
+                    return queue;
             }
         }
-        return false;
+        return null;
     }
+
 }

@@ -45,8 +45,11 @@ public class Queue<T> implements QueueInterface<T> {
         return stack1.isEmpty() && stack2.isEmpty();
     }
 
-    public boolean exist(T data){
-        return stack1.exist(data) || stack2.exist(data);
+    public T find(T data){
+        T stackData1 = stack1.find(data);
+        if(stackData1 != null)
+            return stackData1;
+        return stack2.find(data);
     }
 
     @Override

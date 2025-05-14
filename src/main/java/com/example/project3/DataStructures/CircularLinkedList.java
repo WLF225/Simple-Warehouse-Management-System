@@ -59,6 +59,14 @@ public class CircularLinkedList<T> implements Iterable<T> {
         head = null;
     }
 
+    public T find(T data){
+        for(T curr:this){
+            if(curr.equals(data))
+                return curr;
+        }
+        return null;
+    }
+
     @Override
     public Iterator<T> iterator() {
         return new Iteratorr();
@@ -67,16 +75,18 @@ public class CircularLinkedList<T> implements Iterable<T> {
     public class Iteratorr implements Iterator<T> {
 
         Node<T> curr = head;
+        int num = 0;
 
         @Override
         public boolean hasNext() {
             if (curr == null)
                 return false;
-            return curr!= head;
+            return !(curr == head && num > 0);
         }
 
         @Override
         public T next() {
+            num++;
             T data = curr.getData();
             curr = curr.getNext();
             return data;

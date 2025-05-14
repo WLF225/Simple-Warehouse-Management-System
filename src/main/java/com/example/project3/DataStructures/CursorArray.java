@@ -88,18 +88,17 @@ public class CursorArray<T extends Comparable<T>> implements Iterable<T>{
 //    }
 
 
-    public boolean find(int l,T data){
-
+    public T find(int l,T data){
 
         while(l !=0){
             if(isEmpty(l) || isNull(l))
-                return false;
+                return null;
 
             l = cA[l].getNext();
             if(cA[l].getData().equals(data))
-                return true;
+                return cA[l].getData();
         }
-        return false;
+        return null;
     }
 
     public int findPrevious(int l,T data) {

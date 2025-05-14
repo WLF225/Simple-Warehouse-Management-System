@@ -24,12 +24,8 @@ public class Stack<T> implements StackInterface<T>{
         return list.isEmpty();
     }
 
-    public boolean exist(T data){
-        for(T curr:list){
-            if(curr.equals(data))
-                return true;
-        }
-        return false;
+    public T find(T data){
+        return list.find(data);
     }
 
     @Override
