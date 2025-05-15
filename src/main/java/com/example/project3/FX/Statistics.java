@@ -104,9 +104,10 @@ public class Statistics extends BorderPane {
         }
 
         tA.appendText("\nMost Recent Shipment:\n");
-        Product prod = ProductManagement.findProductById(mostRecShipment.getProductID());
-        tA.appendText("-"+mostRecShipment.getShipmentID()+"("+prod.getProductName()+") -> "+mostRecShipment.dateToString()+"\n\n");
-
+        if(mostRecShipment != null) {
+            Product prod = ProductManagement.findProductById(mostRecShipment.getProductID());
+            tA.appendText("-" + mostRecShipment.getShipmentID() + "(" + prod.getProductName() + ") -> " + mostRecShipment.dateToString() + "\n\n");
+        }
         tA.appendText("Cancel Rate Per Category:\n"+cancelRate);
 
         tA.appendText("\nStatus Summary: \n");
