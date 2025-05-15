@@ -31,6 +31,8 @@ public class MainMenu extends BorderPane {
 
         buttons[1].setOnAction(e -> scene.setRoot(new ShowShipments(scene)));
 
+        buttons[2].setOnAction(e -> scene.setRoot(new Statistics(scene)));
+
         buttons[3].setOnAction(new ReadFiles());
 
         buttons[4].setOnAction(new SaveToFile());

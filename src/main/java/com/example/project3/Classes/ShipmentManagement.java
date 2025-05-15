@@ -46,7 +46,7 @@ public class ShipmentManagement {
 
         product.getUndoStack().push(action);
 
-        product.getInventoryStockList().insertFirst(product.getApprovedList(),shipment);
+        product.getInventoryStockList().insertFirst(1,shipment);
 
         if(!fromRedo) {
             product.getRedoStack().clear();
@@ -69,10 +69,10 @@ public class ShipmentManagement {
         if(shipment == null)
             throw new AlertException("The shipment queue is empty.");
 
-        Action action = new Action(calendar,"Cancel Shipment",shipment,product.getProductID(),"+"+shipment.getQuantity());
+        Action action = new Action(calendar,"Cancel Shipment",shipment,product.getProductID(),"-"+shipment.getQuantity());
 
         product.getUndoStack().push(action);
-        product.getCanceledShipments().insertFirst(product.getCancelledList(),shipment);
+        product.getCanceledShipments().insertFirst(1,shipment);
 
         if(!fromRedo) {
             product.getRedoStack().clear();
@@ -99,7 +99,7 @@ public class ShipmentManagement {
 
         if(action.getAction().equals("Approve Shipment")) {
             //To delete it from inventory and return it to queue
-            product.getInventoryStockList().delete(product.getApprovedList(), shipment);
+            product.getInventoryStockList().delete(1, shipment);
             addFirst(shipment,product.getShipmentsQueue());
             //To add it for history
             newLog.setAction("Undo Approve "+shipment.getShipmentID());
@@ -109,7 +109,7 @@ public class ShipmentManagement {
             newLog.setUndoStack(newLog.getUndoStack().replaceFirst("Approve "+shipment.getShipmentID()+",",""));
         } else if(action.getAction().equals("Cancel Shipment")) {
             //To delete it cancel list and return it to queue
-            product.getCanceledShipments().delete(product.getCancelledList(), shipment);
+            product.getCanceledShipments().delete(1, shipment);
             addFirst(shipment,product.getShipmentsQueue());
             //To add it for history
             newLog.setAction("Undo Cancel "+shipment.getShipmentID());
@@ -187,8 +187,8 @@ public class ShipmentManagement {
         for (ProductCategory curr : CategoryManagement.categoriesList) {
             for (Product currProd : curr.getProductList()) {
                 //to check the approved list
-                Shipment approved = currProd.getInventoryStockList().find(currProd.getApprovedList(), shipment);
-                Shipment canceled = currProd.getCanceledShipments().find(currProd.getCancelledList(), shipment);
+                Shipment approved = currProd.getInventoryStockList().find(1, shipment);
+                Shipment canceled = currProd.getCanceledShipments().find(1, shipment);
                 if (approved != null)
                     return true;
 

@@ -1,8 +1,6 @@
 package com.example.project3.DataStructures;
 
 import javafx.collections.ObservableList;
-
-import java.util.Collections;
 import java.util.Iterator;
 
 public class CursorArray<T extends Comparable<T>> implements Iterable<T>{
@@ -70,24 +68,6 @@ public class CursorArray<T extends Comparable<T>> implements Iterable<T>{
         return cA[l].getNext() == 0;
     }
 
-//    public String listToString(int l) {
-//        if (isNull(l) || isEmpty(l)) {
-//            return null;
-//        }
-//        String str = "list_" + l + "-->";
-//        return listToString(str, cA[cA[l].getNext()]);
-//    }
-//
-//    public String listToString(String str, CNode<T> c) {
-//        str += c + "-->";
-//
-//        if (c.getNext() == 0)
-//            return str + "null";
-//
-//        return listToString(str, cA[c.getNext()]);
-//    }
-
-
     public T find(int l,T data){
 
         while(l !=0){
@@ -121,16 +101,6 @@ public class CursorArray<T extends Comparable<T>> implements Iterable<T>{
         return null;
     }
 
-    public T deleteFirst(int l) {
-        if (isEmpty(l)) {
-            return null;
-        }
-        int deletedItem = cA[l].getNext();
-        cA[l].setNext(cA[deletedItem].getNext());
-        free(deletedItem);
-        return cA[deletedItem].getData();
-    }
-
     public int length(int l) {
         return length(l, 0);
     }
@@ -143,16 +113,6 @@ public class CursorArray<T extends Comparable<T>> implements Iterable<T>{
             return length;
 
         return length(cA[l].getNext(), length + 1);
-    }
-
-    public void clear(int l) {
-        if (isEmpty(l))
-            return;
-        CNode<T> c = cA[l];
-
-        if (deleteFirst(l) != null) {
-            clear(l);
-        }
     }
 
 
@@ -178,21 +138,6 @@ public class CursorArray<T extends Comparable<T>> implements Iterable<T>{
             currentIndex = cA[currentIndex].getNext();
             return data;
         }
-    }
-
-    public String print(){
-        return print("Index\t+Data",0);
-    }
-
-    public String print(String str, int i){
-//        System.out.println("Index\t+Data");
-//        for(int i = 0; i < cA.length; i++){
-//            System.out.println(i+"\t"+cA[i]);
-//        }
-        if (i == capacity)
-            return str;
-        str += "\n"+i+"\t"+cA[i];
-        return print(str,i+1);
     }
 
     public void toObservable(int l,ObservableList<T> list){

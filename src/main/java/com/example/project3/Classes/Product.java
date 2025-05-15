@@ -17,8 +17,7 @@ public class Product implements Comparable<Product>{
     private Stack<Action> undoStack = new Stack<>();
     private Stack<Action> redoStack = new Stack<>();
     private CursorArray<Shipment> canceledShipments = new CursorArray<>(10);
-    private int approvedList = inventoryStockList.createList();
-    private int cancelledList = canceledShipments.createList();
+
     //To make the date of operations
     private ObservableList<Log> logList = FXCollections.observableArrayList();
 
@@ -28,6 +27,8 @@ public class Product implements Comparable<Product>{
         setProductName(productName);
         setCategoryName(categoryName);
         setStatus(status);
+        inventoryStockList.createList();
+        canceledShipments.createList();
     }
 
     public String getProductID() {
@@ -106,14 +107,6 @@ public class Product implements Comparable<Product>{
             this.status = status;
         else
             throw new AlertException("Status can only be Active or Inactive.");
-    }
-
-    public int getApprovedList() {
-        return approvedList;
-    }
-
-    public int getCancelledList() {
-        return cancelledList;
     }
 
     public ObservableList<Log> getLogList() {

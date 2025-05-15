@@ -1,8 +1,7 @@
 package com.example.project3.DataStructures;
 
-import java.util.Iterator;
 
-public class CircularLinkedList<T> implements Iterable<T> {
+public class CircularLinkedList<T> {
 
     private Node<T> head;
 
@@ -57,31 +56,5 @@ public class CircularLinkedList<T> implements Iterable<T> {
 
     public void clear() {
         head = null;
-    }
-
-    @Override
-    public Iterator<T> iterator() {
-        return new Iteratorr();
-    }
-
-    public class Iteratorr implements Iterator<T> {
-
-        Node<T> curr = head;
-        int num = 0;
-
-        @Override
-        public boolean hasNext() {
-            if (curr == null)
-                return false;
-            return !(curr == head && num > 0);
-        }
-
-        @Override
-        public T next() {
-            num++;
-            T data = curr.getData();
-            curr = curr.getNext();
-            return data;
-        }
     }
 }

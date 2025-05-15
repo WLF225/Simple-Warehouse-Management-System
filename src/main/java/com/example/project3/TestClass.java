@@ -15,13 +15,13 @@ public class TestClass {
     public static void main(String[] args) {
 
 
-        CircularLinkedList<Integer> list = new CircularLinkedList<>();
-
-        for(int i = 0; i < 20;i++)
-            list.insertFirst(i);
-
-        for(int num:list)
-            System.out.println(num);
+//        CircularLinkedList<Integer> list = new CircularLinkedList<>();
+//
+//        for(int i = 0; i < 20;i++)
+//            list.insertFirst(i);
+//
+//        for(int num:list)
+//            System.out.println(num);
 
 
 //        Product prod = new Product("P1","test","cat",'A');

@@ -23,8 +23,8 @@ public class ShipmentManagementMenu extends BorderPane {
 
         setPadding(new javafx.geometry.Insets(100));
 
-        Button[] buttons = {new Button("Undo"),new Button("Redo"), new Button("Approve Shipment"),
-                new Button("Cancel Shipment"), new Button("Add Shipment"),new Button("Back")};
+        Button[] buttons = {new Button("Undo"), new Button("Redo"), new Button("Approve Shipment"),
+                new Button("Cancel Shipment"), new Button("Add Shipment"), new Button("Back")};
 
         TableView<Log> tableView = new TableView<>(product.getLogList());
 
@@ -66,70 +66,92 @@ public class ShipmentManagementMenu extends BorderPane {
 
         setCenter(tableView);
 
-        if(product.getUndoStack().isEmpty())
+        if (product.getUndoStack().isEmpty())
             buttons[0].setDisable(true);
 
-        if(product.getRedoStack().isEmpty())
+        if (product.getRedoStack().isEmpty())
             buttons[1].setDisable(true);
 
-        buttons[0].setOnAction(e-> {
+        buttons[0].setOnAction(e -> {
             ShipmentManagement.undo(product);
-            if(product.getUndoStack().isEmpty())
+            if (product.getUndoStack().isEmpty())
                 buttons[0].setDisable(true);
-            buttons[1].setDisable(false);});
+            buttons[1].setDisable(false);
+        });
 
-        buttons[1].setOnAction(e-> {
-                    ShipmentManagement.redo(product);
-                    if(product.getRedoStack().isEmpty())
-                        buttons[1].setDisable(true);
-                    buttons[0].setDisable(false);});
+        buttons[1].setOnAction(e -> {
+            ShipmentManagement.redo(product);
+            if (product.getRedoStack().isEmpty())
+                buttons[1].setDisable(true);
+            buttons[0].setDisable(false);
+        });
 
-        buttons[2].setOnAction(e-> {
-            Shipment ship = product.getShipmentsQueue().getFront();
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Confirmation");
-            alert.setHeaderText(null);
-            alert.setContentText("Are you sure you want to approve shipment " + ship.getShipmentID() + "?");
-            if (alert.showAndWait().get() == javafx.scene.control.ButtonType.OK) {
-                ShipmentManagement.approveShipment(product,false, new GregorianCalendar());
-                Alert alert1 = new Alert(Alert.AlertType.INFORMATION);
-                alert1.setTitle("Shipment Approved");
-                alert1.setHeaderText(null);
-                alert1.setContentText("Shipment " + ship.getShipmentID() + " has been approved.");
-                alert1.showAndWait();
+        buttons[2].setOnAction(e -> {
+            try {
+                Shipment ship = product.getShipmentsQueue().getFront();
+                if (ship == null)
+                    throw new AlertException("Shipment queue is empty.");
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Confirmation");
+                alert.setHeaderText(null);
+                alert.setContentText("Are you sure you want to approve shipment " + ship.getShipmentID() + "?");
+                if (alert.showAndWait().get() == javafx.scene.control.ButtonType.OK) {
+                    ShipmentManagement.approveShipment(product, false, new GregorianCalendar());
+                    Alert alert1 = new Alert(Alert.AlertType.INFORMATION);
+                    alert1.setTitle("Shipment Approved");
+                    alert1.setHeaderText(null);
+                    alert1.setContentText("Shipment " + ship.getShipmentID() + " has been approved.");
+                    alert1.showAndWait();
+                }
+            } catch (AlertException e1) {
+                Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+                errorAlert.setTitle("Error");
+                errorAlert.setHeaderText(null);
+                errorAlert.setContentText(e1.getMessage());
+                errorAlert.showAndWait();
             }
         });
 
 
-        buttons[3].setOnAction(e-> {
-            Shipment ship = product.getShipmentsQueue().getFront();
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Confirmation");
-            alert.setHeaderText(null);
-            alert.setContentText("Are you sure you want to cancel shipment " + ship.getShipmentID() + "?");
-            if (alert.showAndWait().get() == javafx.scene.control.ButtonType.OK) {
-                ShipmentManagement.cancelShipment(product,false, new GregorianCalendar());
-                Alert alert1 = new Alert(Alert.AlertType.INFORMATION);
-                alert1.setTitle("Shipment Cancelled");
-                alert1.setHeaderText(null);
-                alert1.setContentText("Shipment " + ship.getShipmentID() + " has been cancelled.");
-                alert1.showAndWait();
+        buttons[3].setOnAction(e -> {
+            try {
+                Shipment ship = product.getShipmentsQueue().getFront();
+                if (ship == null)
+                    throw new AlertException("Shipment queue is empty.");
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Confirmation");
+                alert.setHeaderText(null);
+                alert.setContentText("Are you sure you want to cancel shipment " + ship.getShipmentID() + "?");
+                if (alert.showAndWait().get() == javafx.scene.control.ButtonType.OK) {
+                    ShipmentManagement.cancelShipment(product, false, new GregorianCalendar());
+                    Alert alert1 = new Alert(Alert.AlertType.INFORMATION);
+                    alert1.setTitle("Shipment Cancelled");
+                    alert1.setHeaderText(null);
+                    alert1.setContentText("Shipment " + ship.getShipmentID() + " has been cancelled.");
+                    alert1.showAndWait();
+                }
+            } catch (AlertException e1) {
+                Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+                errorAlert.setTitle("Error");
+                errorAlert.setHeaderText(null);
+                errorAlert.setContentText(e1.getMessage());
+                errorAlert.showAndWait();
             }
         });
 
-        buttons[4].setOnAction(e -> scene.setRoot(new AddShipmentMenu(scene,product,productCategory)));
+        buttons[4].setOnAction(e -> scene.setRoot(new AddShipmentMenu(scene, product, productCategory)));
 
-        buttons[5].setOnAction(e->scene.setRoot(new ProductManagementMenu(scene,productCategory)));
+        buttons[5].setOnAction(e -> scene.setRoot(new ProductManagementMenu(scene, productCategory)));
 
-        HBox hB1 = new HBox(60,buttons[0],buttons[1]);
+        HBox hB1 = new HBox(60, buttons[0], buttons[1]);
         hB1.setAlignment(Pos.CENTER);
-        HBox hB2 = new HBox(60,buttons[2],buttons[3],buttons[4],buttons[5]);
+        HBox hB2 = new HBox(60, buttons[2], buttons[3], buttons[4], buttons[5]);
         hB2.setAlignment(Pos.CENTER);
 
-        VBox vbox = new VBox(60,hB1,hB2);
+        VBox vbox = new VBox(60, hB1, hB2);
         vbox.setAlignment(Pos.CENTER);
 
-        vbox.setPadding(new javafx.geometry.Insets(100,0,0,0));
+        vbox.setPadding(new javafx.geometry.Insets(100, 0, 0, 0));
 
         setBottom(vbox);
 

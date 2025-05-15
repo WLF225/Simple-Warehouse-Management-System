@@ -13,6 +13,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 
 public class ShowShipments extends BorderPane {
 
@@ -32,8 +33,8 @@ public class ShowShipments extends BorderPane {
 
         for(ProductCategory category:CategoryManagement.categoriesList){
             for(Product prod: category.getProductList()){
-                prod.getInventoryStockList().toObservable(prod.getApprovedList(), approveList);
-                prod.getCanceledShipments().toObservable(prod.getCancelledList(), canceledList);
+                prod.getInventoryStockList().toObservable(1, approveList);
+                prod.getCanceledShipments().toObservable(1, canceledList);
                 Queue<Shipment> queue = prod.getShipmentsQueue();
                 Queue<Shipment> tempQueue = new Queue<>();
 
@@ -77,12 +78,19 @@ public class ShowShipments extends BorderPane {
         });
 
         backB.setOnAction(e -> scene.setRoot(new MainMenu(scene)));
+        //i added these 2 HBoxes so the padding work
+        HBox backHB = new HBox(backB);
+        HBox filterCBHB = new HBox(filterCB);
 
-        setTop(filterCB);
-        BorderPane.setAlignment(filterCB, Pos.CENTER);
+        backHB.setPadding(new javafx.geometry.Insets(80,0,0,0));
+        backHB.setAlignment(Pos.CENTER);
+
+        filterCBHB.setPadding(new javafx.geometry.Insets(0,0,80,0));
+        filterCBHB.setAlignment(Pos.CENTER);
+
+        setTop(filterCBHB);
         setCenter(tableView);
-        setBottom(backB);
-        BorderPane.setAlignment(backB, Pos.CENTER);
+        setBottom(backHB);
 
 
     }
