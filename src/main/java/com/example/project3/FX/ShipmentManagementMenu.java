@@ -4,16 +4,16 @@ import com.example.project3.Classes.*;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 
+import java.io.File;
 import java.util.GregorianCalendar;
+import java.util.Scanner;
 
 public class ShipmentManagementMenu extends BorderPane {
 
@@ -24,7 +24,8 @@ public class ShipmentManagementMenu extends BorderPane {
         setPadding(new javafx.geometry.Insets(100));
 
         Button[] buttons = {new Button("Undo"), new Button("Redo"), new Button("Approve Shipment"),
-                new Button("Cancel Shipment"), new Button("Add Shipment"), new Button("Back")};
+                new Button("Cancel Shipment"), new Button("Add Shipment"), new Button("Back"),
+                new Button("Show file")};
 
         TableView<Log> tableView = new TableView<>(product.getLogList());
 
@@ -143,9 +144,45 @@ public class ShipmentManagementMenu extends BorderPane {
 
         buttons[5].setOnAction(e -> scene.setRoot(new ProductManagementMenu(scene, productCategory)));
 
+        buttons[6].setOnAction(e -> {
+            try{
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.setTitle("Open Resource File");
+
+                File file = fileChooser.showOpenDialog(Main.stage);
+                if(file == null)
+                    throw new AlertException("File not found.");
+
+                Scanner scanner = new Scanner(file);
+
+                TextArea textArea = new TextArea();
+                textArea.setEditable(false);
+
+                while(scanner.hasNextLine()){
+                    textArea.appendText(scanner.nextLine()+"\n");
+                }
+
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("File Content");
+                alert.setHeaderText(null);
+                alert.getDialogPane().setContent(textArea);
+                alert.showAndWait();
+
+                scanner.close();
+
+            }catch(Exception ex){
+                Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+                errorAlert.setTitle("Error");
+                errorAlert.setHeaderText(null);
+                errorAlert.setContentText("File not found.");
+                errorAlert.showAndWait();
+            }
+
+        });
+
         HBox hB1 = new HBox(60, buttons[0], buttons[1]);
         hB1.setAlignment(Pos.CENTER);
-        HBox hB2 = new HBox(60, buttons[2], buttons[3], buttons[4], buttons[5]);
+        HBox hB2 = new HBox(60, buttons[6], buttons[2], buttons[3], buttons[4], buttons[5]);
         hB2.setAlignment(Pos.CENTER);
 
         VBox vbox = new VBox(60, hB1, hB2);

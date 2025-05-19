@@ -53,8 +53,6 @@ public class Shipment implements Comparable<Shipment>{
     }
 
     public void setDate(GregorianCalendar date) {
-        if(date.after(new GregorianCalendar()))
-            throw new AlertException("Date cannot be in the future.");
         this.date = date;
     }
 

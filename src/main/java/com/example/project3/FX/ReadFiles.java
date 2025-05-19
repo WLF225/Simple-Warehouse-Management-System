@@ -15,10 +15,11 @@ public class ReadFiles implements EventHandler<ActionEvent> {
 
     @Override
     public void handle(ActionEvent event) {
-        boolean cond = true;
-        int lineNum = 1;
-        String file = "products";
         try {
+            boolean cond = true;
+            int lineNum = 1;
+            String file = "products";
+
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("INFORMATION");
             alert.setHeaderText(null);
@@ -46,60 +47,91 @@ public class ReadFiles implements EventHandler<ActionEvent> {
             shipmentsScanner.nextLine();
 
             while (productsScanner.hasNextLine()) {
-                lineNum++;
-                String[] temp = productsScanner.nextLine().split(",");
-                char status = temp[3].charAt(0);
-                ProductManagement.addProduct(new Product(temp[0],temp[1],temp[2],status));
+                try {
+                    lineNum++;
+                    String[] temp = productsScanner.nextLine().split(",");
+                    char status = temp[3].charAt(0);
+                    ProductManagement.addProduct(new Product(temp[0], temp[1], temp[2], status));
+                } catch (AlertException e) {
+                    if (cond) {
+                        Alert alertE = new Alert(Alert.AlertType.ERROR);
+                        //To close all the alerts at once
+                        ButtonType closeAllBT = new ButtonType("Close all");
+                        alertE.getButtonTypes().add(closeAllBT);
+                        alertE.setTitle("Error");
+                        alertE.setHeaderText(null);
+                        alertE.setContentText(e.getMessage() + "This error is in line " + lineNum + " in " + file + " file.");
+                        if (alertE.showAndWait().get() == closeAllBT) {
+                            cond = false;
+                        }
+                    }
+                } catch (Exception e1) {
+                    if (cond) {
+                        Alert alertE = new Alert(Alert.AlertType.ERROR);
+                        //To close all the alerts at once
+                        ButtonType closeAllBT = new ButtonType("Close all");
+                        alertE.getButtonTypes().add(closeAllBT);
+                        alertE.setTitle("Error");
+                        alertE.setHeaderText(null);
+                        alertE.setContentText("Rong format in line " + lineNum + " in " + file + " file.");
+                        if (alertE.showAndWait().get() == closeAllBT) {
+                            cond = false;
+                        }
+                    }
+                }
             }
 
             lineNum = 1;
             file = "shipments";
 
             while (shipmentsScanner.hasNextLine()) {
-                lineNum++;
-                String[] temp = shipmentsScanner.nextLine().split(",");
+                try {
+                    lineNum++;
+                    String[] temp = shipmentsScanner.nextLine().split(",");
 
-                String[] parts = temp[3].split("-");
+                    String[] parts = temp[3].split("-");
 
-                int year = Integer.parseInt(parts[0]);
-                int month = Integer.parseInt(parts[1]) - 1;  // Month is zero-based
-                int day = Integer.parseInt(parts[2]);
+                    int year = Integer.parseInt(parts[0]);
+                    int month = Integer.parseInt(parts[1]) - 1;  // Month is zero-based
+                    int day = Integer.parseInt(parts[2]);
 
-                GregorianCalendar calendar = new GregorianCalendar(year, month, day);
-                Product prod = ProductManagement.findProductById(temp[1]);
-                if(prod == null)
-                    throw new AlertException("Product with this ID not found.");
+                    GregorianCalendar calendar = new GregorianCalendar(year, month, day);
+                    Product prod = ProductManagement.findProductById(temp[1]);
+                    if (prod == null)
+                        throw new AlertException("Product with this ID not found.");
 
-                ShipmentManagement.addShipment(new Shipment(temp[0],temp[1],Integer.parseInt(temp[2]),calendar),prod,false,calendar);
-            }
-
-
-        } catch (AlertException e) {
-            if (cond) {
-                Alert alertE = new Alert(Alert.AlertType.ERROR);
-                //To close all the alerts at once
-                ButtonType closeAllBT = new ButtonType("Close all");
-                alertE.getButtonTypes().add(closeAllBT);
-                alertE.setTitle("Error");
-                alertE.setHeaderText(null);
-                alertE.setContentText(e.getMessage() + "This error is in line " + lineNum + " in "+file+" file.");
-                if (alertE.showAndWait().get() == closeAllBT) {
-                    cond = false;
+                    ShipmentManagement.addShipment(new Shipment(temp[0], temp[1], Integer.parseInt(temp[2]), calendar), prod, false, calendar);
+                } catch (AlertException e) {
+                    if (cond) {
+                        Alert alertE = new Alert(Alert.AlertType.ERROR);
+                        //To close all the alerts at once
+                        ButtonType closeAllBT = new ButtonType("Close all");
+                        alertE.getButtonTypes().add(closeAllBT);
+                        alertE.setTitle("Error");
+                        alertE.setHeaderText(null);
+                        alertE.setContentText(e.getMessage() + "This error is in line " + lineNum + " in " + file + " file.");
+                        if (alertE.showAndWait().get() == closeAllBT) {
+                            cond = false;
+                        }
+                    }
+                } catch (Exception e1) {
+                    if (cond) {
+                        Alert alertE = new Alert(Alert.AlertType.ERROR);
+                        //To close all the alerts at once
+                        ButtonType closeAllBT = new ButtonType("Close all");
+                        alertE.getButtonTypes().add(closeAllBT);
+                        alertE.setTitle("Error");
+                        alertE.setHeaderText(null);
+                        alertE.setContentText("Rong format in line " + lineNum + " in " + file + " file.");
+                        if (alertE.showAndWait().get() == closeAllBT) {
+                            cond = false;
+                        }
+                    }
                 }
             }
-        }catch (Exception e1){
-            if (cond) {
-                Alert alertE = new Alert(Alert.AlertType.ERROR);
-                //To close all the alerts at once
-                ButtonType closeAllBT = new ButtonType("Close all");
-                alertE.getButtonTypes().add(closeAllBT);
-                alertE.setTitle("Error");
-                alertE.setHeaderText(null);
-                alertE.setContentText("Rong format in line " + lineNum + " in "+file+" file.");
-                if (alertE.showAndWait().get() == closeAllBT) {
-                    cond = false;
-                }
-            }
+        }catch(Exception e){
+
         }
+
     }
 }

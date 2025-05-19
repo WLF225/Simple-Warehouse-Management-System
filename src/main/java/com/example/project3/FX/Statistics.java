@@ -9,8 +9,6 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 
-import java.util.ArrayList;
-
 public class Statistics extends BorderPane {
 
     public Statistics(Scene scene) {

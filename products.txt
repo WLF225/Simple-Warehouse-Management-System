@@ -1,0 +1,13 @@
+ProductID,Name,Category,Status
+P1,Mouse,Electronics,Active
+P10,Monitor,Electronics,Active
+P2,Keyboard,Electronics,Active
+P3,Laptop,Electronics,Active
+P9,Printer,Electronics,Inactive
+P4,Desk,Furniture,Active
+P5,Chair,Furniture,Active
+P6,Cabinet,Furniture,Inactive
+P12,Waeleeee,Man,Active
+P11,Whiteboard,Office Supplies,Inactive
+P7,Notebook,Office Supplies,Active
+P8,Pen,Office Supplies,Active
